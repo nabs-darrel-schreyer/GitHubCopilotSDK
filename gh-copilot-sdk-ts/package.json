@@ -1,0 +1,20 @@
+{
+  "name": "gh-copilot-sdk-ts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "TypeScript sample using the GitHub Copilot SDK (twin of DotNetGhCopilot.Cli)",
+  "scripts": {
+    "start": "tsx TsGhCopilot.Cli/src/index.ts",
+    "build": "tsc -p tsconfig.json"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@github/copilot-sdk": "^1.0.14",
+    "@types/node": "^22.20.3",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
+  }
+}
