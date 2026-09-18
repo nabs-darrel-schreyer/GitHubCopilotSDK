@@ -5,21 +5,27 @@ from __future__ import annotations
 import asyncio
 import logging
 import sys
+from typing import Any, cast
 
-from copilot import CopilotClient
+from copilot import CopilotClient, CopilotSession
+from copilot.generated.session_events import AssistantMessageData
 from copilot.session import PermissionHandler
 
 GREEN = "\x1b[32m"
 RESET = "\x1b[0m"
 
 
+def _mark_disconnected(session: CopilotSession) -> None:
+    cast(Any, session)._mark_disconnected()
+
+
 async def main() -> None:
     print("Starting a GitHub Copilot session...")
 
-    client = CopilotClient()
+    client: CopilotClient = CopilotClient()
     await client.start()
 
-    session = None
+    session: CopilotSession | None = None
     try:
         session = await client.create_session(
             model="auto",
@@ -32,8 +38,8 @@ async def main() -> None:
         )
         print("Received response from GitHub Copilot...")
         content = ""
-        if response is not None and getattr(response, "data", None) is not None:
-            content = getattr(response.data, "content", "") or ""
+        if response is not None and isinstance(response.data, AssistantMessageData):
+            content = response.data.content
         sys.stdout.write("Response content: ")
         sys.stdout.write(f"{GREEN}{content}{RESET}")
         sys.stdout.write("\n")
@@ -43,7 +49,7 @@ async def main() -> None:
         # Some Copilot runtimes return -32601 (method not found). Mark the
         # session closed locally first so client.stop() skips that RPC.
         if session is not None:
-            session._mark_disconnected()
+            _mark_disconnected(session)
         logging.getLogger("copilot").setLevel(logging.CRITICAL)
         try:
             await client.stop()
