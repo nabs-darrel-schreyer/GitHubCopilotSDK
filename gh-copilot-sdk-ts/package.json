@@ -5,7 +5,8 @@
   "type": "module",
   "description": "TypeScript sample using the GitHub Copilot SDK (twin of DotNetGhCopilot.Cli)",
   "scripts": {
-    "start": "tsx TsGhCopilot.Cli/src/index.ts",
+    "start": "npm run typecheck && tsx TsGhCopilot.Cli/src/index.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "build": "tsc -p tsconfig.json"
   },
   "engines": {
