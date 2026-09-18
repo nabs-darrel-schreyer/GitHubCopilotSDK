@@ -54,6 +54,19 @@ func newClient() *copilot.Client {
 	return copilot.NewClient(nil)
 }
 
+func assistantContent(response *copilot.SessionEvent) (string, error) {
+	if response == nil {
+		return "", fmt.Errorf("no assistant response received")
+	}
+
+	data, ok := response.Data.(*copilot.AssistantMessageData)
+	if !ok {
+		return "", fmt.Errorf("expected assistant message data, got %T", response.Data)
+	}
+
+	return data.Content, nil
+}
+
 func main() {
 	fmt.Println("Starting a GitHub Copilot session...")
 
@@ -82,11 +95,9 @@ func main() {
 	}
 	fmt.Println("Received response from GitHub Copilot...")
 
-	content := ""
-	if response != nil {
-		if d, ok := response.Data.(*copilot.AssistantMessageData); ok {
-			content = d.Content
-		}
+	content, err := assistantContent(response)
+	if err != nil {
+		log.Fatal(err)
 	}
 	fmt.Printf("Response content: %s%s%s\n", green, content, reset)
 	fmt.Println("GitHub Copilot session ended.")
